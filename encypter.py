@@ -2,21 +2,22 @@
 """
 @author: tanma
 """
+#importing modules needed
 import numpy as np
 from keras.models import Model
 from keras.layers import Input, Dense
 from keras.callbacks import ModelCheckpoint
 
-x = list(range(100))
+x = list(range(100)) # auto-encoding using list of 0 - 99 numbers
 
-encoder_inp = Input(shape = (1,))
+encoder_inp = Input(shape = (1,)) #encoding
 enc = Dense(2)(encoder_inp)
 for i in range(2,10):
     enc = Dense(2**i)(enc)
 enc_out = Dense(1024)(enc)
 encoder = Model(encoder_inp,enc_out)
 
-decoder_inp = Input(shape = (1024,))
+decoder_inp = Input(shape = (1024,)) #decoding
 dec = Dense(512)(decoder_inp)
 for i in range(2,10):
     dec = Dense(2**(10-i))(dec)
@@ -27,7 +28,7 @@ autoencoder = Model(encoder_inp, decoder(encoder(encoder_inp)))
 
 autoencoder.compile(loss = 'mse', optimizer = 'nadam')    
 
-filepath = "weight-improvement-{epoch:02d}-{loss:4f}.hd5"
+filepath = "weight-improvement-{epoch:02d}-{loss:4f}.hd5"  #checkpoints added for smooth flow
 checkpoint = ModelCheckpoint(filepath,monitor='val_loss',verbose=1,save_best_only=True,mode='min')
 callbacks=[checkpoint]
 
